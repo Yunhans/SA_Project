@@ -104,7 +104,7 @@
                       <h1 class="modal-title fs-5" >修改大頭照</h1>
                     </div>
                     <div class="modal-body">
-                      <form class="row g-2" id="upload_form" onsubmit="editImg()" enctype="multipart/form-data">
+                      <form class="row g-2" id="upload_img" onsubmit="editImg()" enctype="multipart/form-data">
                         <div class="mb-3">
                           <!-- <label for="formFile" class="form-label">選擇檔案</label> -->
                           <input class="form-control" type="file" id="file_img">
@@ -124,7 +124,7 @@
                 <div class="modal-dialog modal-dialog-centered">
                   <div class="modal-content">
                     <div class="modal-header border-bottom-0">
-                      <h1 class="modal-title fs-5" >修改個人資訊</h1>
+                      <h1 class="modal-title fs-5">修改個人資訊</h1>
                     </div>
                     <div class="modal-body">
                       <form class="row g-2" onsubmit="editMemberInfo()">
@@ -192,7 +192,7 @@
                       <h1 class="modal-title fs-5" >上傳文件</h1>
                     </div>
                     <div class="modal-body">
-                      <form class="row g-2">
+                      <form class="row g-2" id="upload_file" onsubmit="uploadFile()" enctype="multipart/form-data">
                         <div class="mb-3 col-12">
                           <label for="post_name" class="form-label">文件名稱</label>
                           <input type="text" class="form-control rounded-3" id="post_name" value="" required>
@@ -201,25 +201,24 @@
                           <label for="form-check" class="form-label">文件類型</label>
                           <br>
                           <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="course_note" checked>
                             <label class="form-check-label" for="inlineRadio1">筆記</label>
                           </div>
                           <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="course_material">
                             <label class="form-check-label" for="inlineRadio2">教材</label>
                           </div>
                           <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option3">
+                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="course_feedback">
                             <label class="form-check-label" for="inlineRadio3">課程評價</label>
                           </div>
                         </div>
                         <div class="mb-3 col-12">
-                          <!-- <label for="formFile" class="form-label">選擇檔案</label> -->
                           <input class="form-control" type="file" id="post_files" multiple>
                         </div>
                         <div class="mb-3 col-12">
-                          <label for="post_discribe" class="form-label">說明</label>
-                          <textarea class="form-control rounded-3" id="post_discribe" value="" style="height: 140px"></textarea>
+                          <label for="post_discription" class="form-label">說明</label>
+                          <textarea class="form-control rounded-3" id="post_discription" value="" style="height: 140px"></textarea>
                         </div>
                         <div class="flex text-end">
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
@@ -464,11 +463,54 @@
           document.getElementById("bio_edit").textContent = data[0]['member_bio'];
         }
 
+        function uploadFile() {
+          event.preventDefault();
+          var member_id = getCookie("memberId");
+          var post_name = document.getElementById("post_name").value;
+          var post_type = document.querySelector('input[name="inlineRadioOptions"]:checked').value;
+          var post_files = document.getElementById("post_files");
+          var post_discription = $("#post_discription").val();
+
+          console.log(post_name);
+          console.log(post_type);
+          selectedFiles = post_files.files;
+          for (var i = 0; i < selectedFiles.length; i++) {
+            console.log('File ' + (i + 1) + ':', selectedFiles[i].name);
+            console.log('Type:', selectedFiles[i].type);
+            console.log('Size:', selectedFiles[i].size, 'bytes');
+          }
+          console.log(post_discription);
+
+          var formData = new FormData(document.getElementById('upload_file'));
+          formData.append("member_id", member_id);
+          formData.append("post_name", post_name);
+          formData.append("post_type", post_type);
+          formData.append("post_files", post_files);
+          formData.append("post_discription", post_discription);
+
+          $.ajax({
+            url: 'api/post.do',
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+              alert("成功上傳檔案");
+              console.log(response);
+            },
+            error: function () {
+              alert("上傳檔案失敗");
+            }
+          });
+          setTimeout(() => {  location.reload(); }, 600);
+
+        }
+
         function editImg() {
           event.preventDefault();
           var member_id = getCookie('memberId');
           var file = $("#file_img")[0].files[0];
-          var formData = new FormData(document.getElementById('upload_form'));
+          var formData = new FormData(document.getElementById('upload_img'));
           formData.append("file", file);
           formData.append("member_id", member_id);
           
