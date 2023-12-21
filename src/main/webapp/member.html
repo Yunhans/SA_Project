@@ -217,8 +217,8 @@
                           <input class="form-control" type="file" id="post_files" multiple>
                         </div>
                         <div class="mb-3 col-12">
-                          <label for="post_discription" class="form-label">說明</label>
-                          <textarea class="form-control rounded-3" id="post_discription" value="" style="height: 140px"></textarea>
+                          <label for="post_description" class="form-label">說明</label>
+                          <textarea class="form-control rounded-3" id="post_description" value="" style="height: 140px"></textarea>
                         </div>
                         <div class="flex text-end">
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
@@ -469,7 +469,7 @@
           var post_name = document.getElementById("post_name").value;
           var post_type = document.querySelector('input[name="inlineRadioOptions"]:checked').value;
           var post_files = document.getElementById("post_files");
-          var post_discription = $("#post_discription").val();
+          var post_description = $("#post_description").val();
 
           console.log(post_name);
           console.log(post_type);
@@ -486,7 +486,7 @@
           formData.append("post_name", post_name);
           formData.append("post_type", post_type);
           formData.append("post_files", post_files);
-          formData.append("post_discription", post_discription);
+          formData.append("post_description", post_description);
 
           $.ajax({
             url: 'api/post.do',
