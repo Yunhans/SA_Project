@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登入</title>
+
+    <link href="statics/css/bootstrap.min.css" rel="stylesheet">
+    <link href="statics/icons/font/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="statics/js/bootstrap.bundle.min.js"></script>
+    <script src="statics/js/hugo.js"></script>
+    <script src="statics/js/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <!-- navbar -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <button class="navbar-toggler border-0 ps-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand ms-1" href="index.html">學生資源分享站</a>
+            <!-- menu -->
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                <ul class="navbar-nav me-auto ms-2 mb-2 mb-lg-0 ">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="bi bi-house-door"></i> 首頁
+                        </a>
+                    </li>
+                </ul>
+                <!-- search bar -->
+                <form role="search">
+                    <div class="input-group my-2">
+                        <span class="input-group-text bg-white text-secondary border-end-0 ms-1 pe-2" id="basic-addon1"><i class="bi bi-search"></i></span>
+                        <input type="search" class="form-control border-start-0 me-1 ps-2" placeholder="搜尋" aria-label="Search" aria-describedby="basic-addon1">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- login form -->
+    <div class="container col-xl-10 col-xxl-8 px-4 py-5"> 
+        <div class="row align-items-center g-lg-5 py-5">
+            <div class="col-lg-7 text-center text-lg-start">
+                <h1 class="display-4 fw-bold lh-1 text-body-emphasis mb-3">共創學習之道</h1>
+                <p class="col-lg-10 fs-4">這個平台旨在為學生提供一個豐富、開放的學習環境，讓你能夠在學術領域中更上一層樓，一同探索學習的無限可能</p>
+            </div>
+            <div class="col-md-10 mx-auto col-lg-5">
+                <form class="p-4 p-md-5 border rounded-3 bg-body-tertiary" onsubmit="login()">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="account" placeholder="Account" required>
+                        <label for="account">帳號</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="password" placeholder="Password" required>
+                        <label for="password">密碼</label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" value="" id="adminCheck">
+                        <label class="form-check-label" for="adminCheck">以管理員身份</label>
+                    </div>
+                    <button class="w-100 btn btn-lg btn-primary" type="submit">登入</button>
+                    <hr class="my-4">
+                    <small class="text-body-secondary">沒有帳號？  <a href="register.html">註冊帳號</a></small>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        checkLoginStatus();
+
+        function checkLoginStatus() {
+            const memberLoggedIn = getCookie('memberLoggedIn');
+            const adminLoggedIn = getCookie('adminLoggedIn');
+
+            if (memberLoggedIn === 'true' || adminLoggedIn === 'true') {
+                // 用戶已登入
+                alert('您已經登入');
+                window.location.href = "/SA_Project/index.html";
+            }
+        }
+        
+        function login(){
+            event.preventDefault();
+
+            var username = document.getElementById('account').value;
+            var password = document.getElementById('password').value;
+            var adminCheck = document.getElementById('adminCheck').checked;
+
+            var data_object = {
+                "member_account": username,
+                "hash_pwd": password
+            };
+
+            var data_string = JSON.stringify(data_object);
+
+            $.ajax({
+                type: "POST",
+                url: "api/login.do",
+                data: data_string,
+                crossDomain: true,
+                cache: false,
+                dataType: 'json',
+                timeout: 5000,
+                success: function (response) {
+                    if(response.status == 200){
+                        loginCheck(response.response.data, adminCheck);
+                    }else if(response.status == 403){
+                        alert('此帳號不存在');
+                    }else if(response.status == 414){
+                        alert('密碼錯誤');
+                    }else{
+                        alert('未知錯誤');
+                    }
+                },
+                error: function () {
+                    alert("無法連線到伺服器！");
+                }
+            });
+        }
+
+        function loginCheck(data, adminCheck) {
+            if(data[0]['is_admin'] == 1 && adminCheck){
+                alert('Login successful as an admin!');
+                setCookie('adminLoggedIn', 'true');
+                setCookie('memberId', data[0]['member_id']);
+                window.location.href = "/SA_Project/index.html";
+            }else if(data[0]['is_admin'] == 0 && adminCheck){
+                alert('沒有管理員權限，請重新登入');
+                location.reload();
+            }else{
+                setCookie('memberLoggedIn', 'true');
+                setCookie('memberId', data[0]['member_id']);
+                window.location.href = "/SA_Project/index.html";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>連線測試</title>
+
+    <link href="statics/css/bootstrap.min.css" rel="stylesheet">
+    <link href="statics/icons/font/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="statics/js/bootstrap.bundle.min.js"></script>
+    <script src="statics/js/hugo.js"></script>
+    <script src="statics/js/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <!-- navbar -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <button class="navbar-toggler border-0 ps-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand ms-1" href="index.html">學生資源分享站</a>
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                <ul class="navbar-nav me-auto ms-2 mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="bi bi-house-door"></i> 首頁
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" id="admin_page" href="admin.html" style="display: none;">
+                            <i class="bi bi-database-fill"></i> 連線測試
+                        </a>
+                    </li>
+                </ul>
+                <!-- search bar -->
+                <form role="search">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white text-secondary border-end-0 ms-1 pe-2" id="basic-addon1"><i class="bi bi-search"></i></span>
+                        <input type="search" class="form-control border-start-0 me-1 ps-2" placeholder="搜尋" aria-label="Search" aria-describedby="basic-addon1">
+                    </div>
+                </form>
+                <!-- <div class="text-center">
+                    <a type="button" id="loginBtn" class="btn btn-primary mx-1 my-2" href="login.html">
+                        <i class="bi bi-person-circle"></i> 登入
+                    </a>
+                </div> -->
+                <div class="text-center">
+                    <a type="button" id="logoutBtn" class="btn btn-outline-danger mx-1 my-2" onclick="logout()" style="display: none;">
+                        <i class="bi bi-box-arrow-right"></i> 登出
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- member table -->
+    <div class="container">
+        <br>
+        <h5 class="mt-3">會員資料</h5>
+        <br>
+        <div class="table-responsive">
+            <table id="table" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>姓名</th>
+                        <th>帳號</th>
+                        <th>自介</th>
+                        <th>管理員身份</th>
+                        <th>大頭照連結</th>
+                        <th>刪除會員</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <br>
+        <div class="text-center">
+            <button class="btn btn-lg btn-outline-primary" type="button" onclick="getAllMember()">刷新會員資料</button>
+        </div>
+    </div>
+
+    <script>
+        checkLoginStatus();
+
+        function checkLoginStatus() {
+            const memberLoggedIn = getCookie('memberLoggedIn');
+            const adminLoggedIn = getCookie('adminLoggedIn');
+
+            if(adminLoggedIn === 'true'){ 
+                // 管理員身份
+                // document.getElementById('loginBtn').style.display = 'none';
+                document.getElementById('admin_page').style.display = 'block';
+                document.getElementById('logoutBtn').style.display = 'block';
+                getAllMember();
+            } else {
+                // 非管理員身份
+                // document.getElementById('loginBtn').style.display = 'block';
+                // document.getElementById('logoutBtn').style.display = 'none';
+                alert('沒有權限，將跳轉首頁');
+                window.location.href = "/NCU_MIS_SA/index.html";
+            }
+        }
+
+        function getAllMember() {
+            // 發出POST的GET請求取得所有會員列表
+            $.ajax({
+                type: "GET",
+                url: "api/member.do",
+                crossDomain: true,
+                cache: false,
+                dataType: 'json',
+                timeout: 5000,
+                success: function (response) {
+                    // alert("成功連線到伺服器！");
+                    if(response.status == 200){
+                        updateTable(response.response.data);
+                    }
+                    console.log(response);
+                },
+                error: function () {
+                    alert("無法連線到伺服器！");
+                }
+            });
+        }
+
+        function updateTable(data) {
+            const currentId = getCookie('memberId');
+            $("#table > tbody").empty();
+            var table_html = '';
+            $.each(data, function(index, value) {
+                table_html += '<tr><td scope="row">' + value['member_id'] + '</td>';
+                table_html += '<td>' + value['member_name'] + '</td>';
+                table_html += '<td>' + value['member_account'] + '</td>';
+                table_html += '<td>' + value['member_bio'] + '</td>';
+                if(value['is_admin']==1 && value['member_id'] == currentId){
+                    table_html += '<td><div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" checked disabled></div></td>';
+                }else if(value['is_admin']==1){
+                    table_html += '<td><div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" onclick="changeAdmin(' + value['member_id'] + ')" checked></div></td>';
+                }else{
+                    table_html += '<td><div class="form-check form-switch"><input class="form-check-input" type="checkbox"  onclick="changeAdmin(' + value['member_id'] + ')" role="switch"></div></td>';
+                }
+
+                table_html += '<td>' + value['member_img_path'] + '</td>';
+
+                if(value['member_id'] != currentId){
+                    table_html += '<td><a class="btn btn-outline-danger btn-sm" href="javascript: deleteMember(' + value['member_id'] + ');">刪除</a></td></tr>';
+                }else {
+                    table_html += '<td><a class="btn btn-outline-danger btn-sm disabled" href="javascript: deleteMember(' + value['member_id'] + ');">刪除</a></td></tr>';
+                }
+            })
+
+            $("#table > tbody").append(table_html);
+        }
+
+        function changeAdmin(member_id) {
+            var request = {'action':"chAdmin",'member_id': member_id};
+            var data_string = JSON.stringify(request);
+            $.ajax({
+                type: "PUT",
+                url: "api/member.do",
+                crossDomain: true,
+                data: data_string,
+                cache: false,
+                dataType: 'json',
+                timeout: 5000,
+                success: function (response) {
+                    if(response.status == 200){
+                        alert("成功更改權限");
+                    }
+                    console.log(response);
+                },
+                error: function () {
+                    alert("無法連線到伺服器！");
+                }
+            });
+            setTimeout(() => {  getAllMember(); }, 600);
+        }
+
+        function deleteMember(member_id) {
+            var check = window.confirm("確認刪除會員？");
+            if (check == true) {
+                console.log("You pressed OK!");
+                var request = {'member_id': member_id};
+                var data_string = JSON.stringify(request);
+                $.ajax({
+                    type: "DELETE",
+                    url: "api/member.do",
+                    crossDomain: true,
+                    data: data_string,
+                    cache: false,
+                    dataType: 'json',
+                    timeout: 5000,
+                    success: function (response) {
+                        if(response.status == 200){
+                            alert('已經成功刪除會員')
+                            getAllMember();
+                        }
+                        console.log(response);
+                    },
+                    error: function () {
+                        alert("無法連線到伺服器！");
+                    }
+                });
+            }
+            else {
+                console.log("You pressed Cancel!");
+            }
+        }
+    </script>
+</body>
+</html>

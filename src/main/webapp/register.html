@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>會員註冊</title>
+
+    <link href="statics/css/bootstrap.min.css" rel="stylesheet">
+    <link href="statics/icons/font/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="statics/js/bootstrap.bundle.min.js"></script>
+    <script src="statics/js/hugo.js"></script>
+    <script src="statics/js/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <!-- navbar -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <button class="navbar-toggler border-0 ps-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand ms-1" href="index.html">學生資源分享站</a>
+            <!-- menu -->
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                <ul class="navbar-nav me-auto ms-2 mb-2 mb-lg-0 ">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="index.html">
+                            <i class="bi bi-house-door"></i> 首頁
+                        </a>
+                    </li>
+                    <!-- <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-chat"></i> 通知欄
+                        </a>
+                    </li> -->
+                </ul>
+                <!-- search bar -->
+                <form role="search">
+                    <div class="input-group my-2">
+                        <span class="input-group-text bg-white text-secondary border-end-0 ms-1 pe-2" id="basic-addon1"><i class="bi bi-search"></i></span>
+                        <input type="search" class="form-control border-start-0 me-1 ps-2" placeholder="搜尋" aria-label="Search" aria-describedby="basic-addon1">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- register form -->
+    <div class="modal modal-sheet position-static d-block p-3 py-md-5" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content rounded-4 bg-body-tertiary">
+                <div class="modal-header px-4 pt-5 pb-1 border-bottom-0">
+                    <h1 class="fw-bold mb-0 fs-2">立即註冊</h1>
+                    <small class="text-body-secondary">已經有帳號？  <a href="login.html">會員登入</a></small>
+                </div>
+                <div class="modal-body p-4">
+                    <form class="row g-2" onsubmit="register()">
+                        <div class="form-floating mb-3 col-md-6">
+                            <input type="text" class="form-control rounded-3" id="username"  placeholder="Username" required>
+                            <label for="floatingInput">使用者名稱</label>
+                        </div>
+                        <div class="form-floating mb-3 col-md-6">
+                            <input type="text" class="form-control rounded-3" id="account" placeholder="Account" required>
+                            <label for="floatingInput">帳號</label>
+                        </div>
+                        <div class="form-floating mb-3 col-12">
+                            <input type="password" class="form-control rounded-3" id="password" placeholder="Password" required>
+                            <label for="floatingInput">密碼</label>
+                        </div>
+                        <div class="form-floating mb-3 col-12">
+                            <input type="password" class="form-control rounded-3" id="password2" placeholder="Password2" required>
+                            <label for="floatingPassword">再次輸入密碼</label>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="gridCheck" required>
+                                <label class="form-check-label" for="gridCheck">
+                                    我同意分享所有上傳資料
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button class="mb-4 btn btn-lg rounded-3 btn-primary" type="submit">註冊</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        checkLoginStatus();
+
+        function checkLoginStatus() {
+            const memberLoggedIn = getCookie('memberLoggedIn');
+            const adminLoggedIn = getCookie('adminLoggedIn');
+
+            if (memberLoggedIn === 'true' || adminLoggedIn === 'true') {
+                // 用戶已登入
+                alert('您已經登入');
+                window.location.href = "/NCU_MIS_SA/index.html";
+            }
+        }
+
+        function register(){
+            event.preventDefault();
+
+            var username = document.getElementById('username').value;
+            var account = document.getElementById('account').value;
+            var password = document.getElementById('password').value;
+            var password2 = document.getElementById('password2').value;
+
+            var data_object = {
+                "member_name": username,
+                "member_account": account,
+                "hash_pwd": password
+            };
+
+            var data_string = JSON.stringify(data_object);
+
+            if(password2 != password){
+                alert('密碼輸入不一致，請重新註冊');
+                location.reload();
+            }else{
+                $.ajax({
+                    type: "POST",
+                    url: "api/register.do",
+                    data: data_string,
+                    crossDomain: true,
+                    cache: false,
+                    dataType: 'json',
+                    timeout: 5000,
+                    success: function (response) {
+                        if(response.status == 200){
+                            alert('註冊成功，將前往登入頁面');
+                            window.location.href = "/NCU_MIS_SA/login.html";
+                        }else if(response.status == 400){
+                            alert('帳號名稱已存在，請換個帳號名稱');
+                            location.reload();
+                        }
+                    },
+                    error: function () {
+                        alert("無法連線到伺服器！");
+                    }
+                });
+            }
+        }
+
+    </script>
+</body>
+</html>
