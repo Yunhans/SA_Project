@@ -479,13 +479,16 @@
             console.log('Type:', selectedFiles[i].type);
             console.log('Size:', selectedFiles[i].size, 'bytes');
           }
-          console.log(post_discription);
+          console.log(post_description);
 
           var formData = new FormData(document.getElementById('upload_file'));
           formData.append("member_id", member_id);
           formData.append("post_name", post_name);
           formData.append("post_type", post_type);
-          formData.append("post_files", post_files);
+          // formData.append("post_files", post_files);
+          for (var i = 0; i < post_files.files.length; i++) {
+    		formData.append("post_files", post_files.files[i]);
+		  }
           formData.append("post_description", post_description);
 
           $.ajax({

@@ -38,7 +38,7 @@ public class MemberController extends HttpServlet {
 	 * @throws IOException      Signals that an I/O exception has occurred.
 	 */
 	/*
-	 * public void doPost(HttpServletRequest request, HttpServletResponse response)
+	  public void doPost(HttpServletRequest request, HttpServletResponse response)
 	 * throws ServletException, IOException { /**
 	 * 透過JsonReader類別將Request之JSON格式資料解析並取回 JsonReader jsr = new
 	 * JsonReader(request); JSONObject jso = jsr.getObject();
