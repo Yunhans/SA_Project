@@ -110,7 +110,7 @@ public class PostController extends HttpServlet {
 			resp.put("status", "200");
 			resp.put("message", "貼文資料取得成功");
 			resp.put("response", query);
-			System.out.println("pctrller do get response:" + resp);
+
 			/** 透過JsonReader物件回傳到前端（以JSONObject方式） */
 			jsr.response(resp, response);
 		}
