@@ -151,21 +151,26 @@ public class PostController extends HttpServlet {
                     // InputStream fileContent = part.getInputStream();
                     String randomCode = generateRandomCode();
                     try (InputStream fileContent = part.getInputStream()) {
-                        String uploadDirectory = "eclipse-workspace/SA_Project/src/main/webapp/filepath/";
+                    	
 						// Construct the path where you want to save the file
-                        String filePath = uploadDirectory  +   randomCode+ "_" + fileName  ;
-
-                        // Save the file
-                        Files.copy(fileContent, new File(filePath).toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        String filePathname = randomCode+ "_" + fileName  ;
                         
-                        UploadedFile uf = new UploadedFile(filePath,latestid,id);
+                      //file path in folder
+                        String uploadDirectory = "eclipse-workspace/SA_Project/src/main/webapp/filepath/" + filePathname;
+                        // file path in sql
+                        String sql_store = "filepath/" + filePathname;
+                        
+                        // Save the file
+                        Files.copy(fileContent, new File(uploadDirectory).toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        
+                        UploadedFile uf = new UploadedFile(sql_store,latestid,id);
                         
                       	ph.createfile(uf);
                         
                        
                         
                         // Print the file path for verification (you can remove this in production)
-                        System.out.println("File saved to: " + filePath);
+                        System.out.println("Filein (folder) saved to: " + uploadDirectory);
                     } catch (IOException e) {
                         e.printStackTrace();
                         // Handle exception appropriately
