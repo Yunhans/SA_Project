@@ -89,7 +89,7 @@ public class MemberController extends HttpServlet {
 		// id = jso.getInt("member_id");
 		/** 判斷該字串是否存在，若存在代表要取回個別會員之資料，否則代表要取回全部資料庫內會員之資料 */
 		if (id == null) {
-			System.out.println("func: get all member");
+			System.out.println("func: memebercontroller get all member");
 			/** 透過MemberHelper物件之getAll()方法取回所有會員之資料，回傳之資料為JSONObject物件 */
 			JSONObject query = mh.getAll();
 
@@ -102,7 +102,7 @@ public class MemberController extends HttpServlet {
 			/** 透過JsonReader物件回傳到前端（以JSONObject方式） */
 			jsr.response(resp, response);
 		} else {
-			System.out.println("func: get by id");
+			System.out.println("func: membercontroller get by id");
 			/** 透過MemberHelper物件的getByID()方法自資料庫取回該名會員之資料，回傳之資料為JSONObject物件 */
 			JSONObject query = mh.getByID(id);
 

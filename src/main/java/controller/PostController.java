@@ -64,7 +64,7 @@ public class PostController extends HttpServlet {
 		JsonReader jsr = new JsonReader(request);
 
 		// String id = jsr.getParameter("id");
-		String id = request.getParameter("post_id");
+		String id = request.getParameter("member_id");
 		System.out.println("jsr.getparameter id: " + id);
 
 		/** 若直接透過前端AJAX之data以key=value之字串方式進行傳遞參數，可以直接由此方法取回資料 */
@@ -72,7 +72,7 @@ public class PostController extends HttpServlet {
 		// id = jso.getInt("member_id");
 		/** 判斷該字串是否存在，若存在代表要取回個別會員之資料，否則代表要取回全部資料庫內會員之資料 */
 		if (id == null) {
-			System.out.println("func: get all post");
+			System.out.println("func: postcontroller get all post");
 			/** 透過MemberHelper物件之getAll()方法取回所有會員之資料，回傳之資料為JSONObject物件 */
 			JSONObject query = ph.getAllPost();
 
