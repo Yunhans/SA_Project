@@ -56,11 +56,10 @@ public class PostHelper {
 			/** 取得資料庫之連線 */
 			conn = DBMgr.getConnection();
 			/** SQL指令 */
-			String sql = "SELECT RANK()Over(PARTITION BY f.post_id ORDER BY f.file_id) as page, f.file_path, f.post_id,"
-					+ " p.post_title, p.post_type, p.post_description, m.member_id, m.member_name, m.member_account "
-					+ "FROM `mydb`. Post p "
-					+ "Left JOIN `mydb`. File f ON p.post_id = f.post_id "
-					+ "LEFT JOIN `mydb`.Member m ON f.member_id = m.member_id "
+			String sql = "SELECT RANK()Over(PARTITION BY f.post_id ORDER BY f.file_id) as page, f.file_path, p.post_id,p.post_title, p.post_type, p.post_description, m.member_id, m.member_name, m.member_account "
+					+ "FROM Post p "
+					+ "Left JOIN file f ON p.post_id = f.post_id "
+					+ "LEFT JOIN Member m ON p.member_id = m.member_id "
 					+ "ORDER BY f.post_id;";
 
 			/** 將參數回填至SQL指令當中，若無則不用只需要執行 prepareStatement */
@@ -271,11 +270,11 @@ public class PostHelper {
 			/** 取得資料庫之連線 */
 			conn = DBMgr.getConnection();
 			/** SQL指令 */
-			String sql = "SELECT RANK()Over(PARTITION BY f.post_id ORDER BY f.file_id) as page, f.file_path, f.post_id, p.post_title, p.post_type, p.post_description, m.member_id, m.member_name, m.member_account"
-					+ " FROM `mydb`.Post p "
-					+ " LEFT JOIN `mydb`.File f ON p.post_id = f.post_id"
-					+ " LEFT JOIN `mydb`.Member m ON f.member_id = m.member_id"
-					+ " WHERE f.member_id = ?";
+			String sql = "SELECT RANK()Over(PARTITION BY f.post_id ORDER BY f.file_id) as page, f.file_path, p.post_id,p.post_title, p.post_type, p.post_description, m.member_id, m.member_name, m.member_account "
+					+ "FROM Post p "
+					+ "Left JOIN file f ON p.post_id = f.post_id "
+					+ "LEFT JOIN Member m ON p.member_id = m.member_id "
+					+ "WHERE f.member_id = ?";
 
 			/** 將參數回填至SQL指令當中 */
 			pres = conn.prepareStatement(sql);
