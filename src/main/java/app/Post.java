@@ -44,10 +44,18 @@ public class Post {
 		this.member_id = member_id;
 		this.member_name = member_name;
 		this.member_account = member_account;
-		
-
 	}
 	
+public Post(String post_title, String post_type, String post_description, int member_id) {
+		
+		this.post_title = post_title;
+		this.post_type = post_type;
+		this.post_description = post_description;
+		this.member_id = member_id;
+	}
+	
+
+
 	public int getPage() {
 		return this.page;
 	}
