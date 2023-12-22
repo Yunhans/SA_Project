@@ -324,11 +324,11 @@ public class PostHelper {
 		// response.put("sql", exexcute_sql);
 		// response.put("row", row);
 		response.put("data", jsa);
-		System.out.println("posthelper getbyid response: " + jsa);
+		System.out.println("posthelper getSinglePost response: " + jsa);
 		
 		
 		
-		return null;
+		return response;
 	}
 	
  	public JSONObject getByID(String id) {
