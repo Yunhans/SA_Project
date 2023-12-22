@@ -30,6 +30,9 @@ import org.json.JSONObject;
 
 import app.MemberHelper;
 import app.Post;
+
+import app.UploadedFile;
+
 import app.PostHelper;
 import tools.JsonReader;
 
@@ -107,11 +110,8 @@ public class PostController extends HttpServlet {
 		
 
 		//Collection<Part> parts = request.getParts();
-		
-
-    	
-
         String uploadDir = "eclipse-workspace/SA_Project/src/main/webapp/filepath/";
+       
         
         //String cla = this.getClass().getClassLoader().getResource(".").getPath();
         //String img_path = cla.replace("/WEB-INF/classes/", "/img/");
@@ -126,8 +126,25 @@ public class PostController extends HttpServlet {
             Collection<Part> parts = request.getParts();
             System.out.println(parts);
 
-            // 迭代處理每個部分
+            
+            //貼文存進資料庫
+            
+          	
+            
+            int id = Integer.parseInt(request.getParameter("member_id"))  ;
+            String post_title = request.getParameter("post_name");
+            String post_type = request.getParameter("post_type");
+            String post_description = request.getParameter("post_description");
+        	
+            Post p = new Post(post_title,post_type,post_description,id);
+            int latestid =  ph.createPost(p);
+            
+
+            
+            // 檔案存置資料庫
             for (Part part : parts) {
+            	
+      
                 // 如果是檔案部分
                 if (part.getSubmittedFileName() != null) {
                     String fileName = getFileName(part);
@@ -140,7 +157,13 @@ public class PostController extends HttpServlet {
 
                         // Save the file
                         Files.copy(fileContent, new File(filePath).toPath(), StandardCopyOption.REPLACE_EXISTING);
-
+                        
+                        UploadedFile uf = new UploadedFile(filePath,latestid,id);
+                        
+                      	ph.createfile(uf);
+                        
+                       
+                        
                         // Print the file path for verification (you can remove this in production)
                         System.out.println("File saved to: " + filePath);
                     } catch (IOException e) {
@@ -152,32 +175,33 @@ public class PostController extends HttpServlet {
                     // saveFile(fileContent, fileName);
                     System.out.println(fileName);
                     
-                } else {
-                    // 如果是其他表單欄位
-                    String fieldName = part.getName();
-                    String fieldValue = request.getParameter(fieldName);
-                    System.out.println("Field Name: " + fieldName + ", Field Value: " + fieldValue);
                 }
+                
+                     
             }
+        	JSONObject resp = new JSONObject();
 
+    		resp.put("message", "上傳成功!");
+    		resp.put("status", "200");
+    		
             
- 
         }catch (Exception ex) {
+        	
+        	JSONObject resp = new JSONObject();
+
+    		resp.put("message", "上傳失敗!");
+    		resp.put("status", "400");
+    		
+        	
             System.out.println("Upload fail!");
             ex.printStackTrace(); // 輸出詳細錯誤信息
         }
+        
+    
         	
 	}
 	
-	private String getSubmittedFileName(Part part) {
-        for (String cd : part.getHeader("content-disposition").split(";")) {
-            if (cd.trim().startsWith("filename")) {
-                String fileName = cd.substring(cd.indexOf('=') + 1).trim().replace("\"", "");
-                return fileName.substring(fileName.lastIndexOf('/') + 1).substring(fileName.lastIndexOf('\\') + 1);
-            }
-        }
-        return null;
-    }
+
 
 	private static String generateRandomCode() {
         // 定義亂數產生的範圍（這裡是0到9999）
@@ -196,9 +220,9 @@ public class PostController extends HttpServlet {
         return randomCode;
     }
 	
-	private String getFileExtension(String fileName) {
-	    return fileName.substring(fileName.lastIndexOf('.') + 1);
-	}
+//	private String getFileExtension(String fileName) {
+//	    return fileName.substring(fileName.lastIndexOf('.') + 1);
+//	}
 	
 //    private boolean isFilePart(Part part) {
 //        // 檢查 Content-Disposition header 是否包含 "filename"
@@ -214,13 +238,13 @@ public class PostController extends HttpServlet {
         return null;
     }
 
-    private void saveFile(InputStream fileContent, String uploadFolder, String fileName) throws IOException {
-        Path uploadPath = Paths.get(uploadFolder);
-        Files.createDirectories(uploadPath);
-
-        // 使用 NIO 保存檔案
-        Path filePath = uploadPath.resolve(fileName);
-        Files.copy(fileContent, filePath, StandardCopyOption.REPLACE_EXISTING);
-    }
+//    private void saveFile(InputStream fileContent, String uploadFolder, String fileName) throws IOException {
+//        Path uploadPath = Paths.get(uploadFolder);
+//        Files.createDirectories(uploadPath);
+//
+//        // 使用 NIO 保存檔案
+//        Path filePath = uploadPath.resolve(fileName);
+//        Files.copy(fileContent, filePath, StandardCopyOption.REPLACE_EXISTING);
+//    }
 
 }
