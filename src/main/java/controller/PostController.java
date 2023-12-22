@@ -78,7 +78,7 @@ public class PostController extends HttpServlet {
 
 			/** 新建一個JSONObject用於將回傳之資料進行封裝 */
 			JSONObject resp = new JSONObject();
-			resp.put("status", "400");
+			resp.put("status", "200");
 			resp.put("message", "所有貼文取得成功");
 			resp.put("response", query);
 
