@@ -117,6 +117,143 @@ public class PostHelper {
 	
 	
 	
+	public int createPost(Post p) {
+		/** 記錄實際執行之SQL指令 */
+		String exexcute_sql = "";
+		/** 紀錄程式開始執行時間 */
+		long start_time = System.nanoTime();
+		/** 紀錄SQL總行數 */
+		int row = 0;
+		
+		int post_id = -1;
+		
+		/** 儲存JDBC檢索資料庫後回傳之結果，以 pointer 方式移動到下一筆資料 */
+		ResultSet rs = null;
+
+		try {
+			/** 取得資料庫之連線 */
+			conn = DBMgr.getConnection();
+			/** SQL指令 */
+			String sql = "INSERT INTO `mydb`.`post`(`post_title`,`post_type`,`post_description`,`member_id`)"
+					+ " VALUES(?, ?, ?, ?)";
+
+			/** 取得所需之參數 */
+			String post_title = p.getPost_Title();
+			String post_type = p.getPost_Type();
+			String post_description = p.getPost_Description();
+			int member_id = p.getMember_ID();
+
+			/** 將參數回填至SQL指令當中 */
+			pres = conn.prepareStatement(sql);
+			// pres.setString(1, name);
+			pres.setString(1, post_title);
+			pres.setString(2, post_type);
+			pres.setString(3, post_description);
+			pres.setInt(4, member_id);
+
+			/** 執行新增之SQL指令並記錄影響之行數 */
+			row = pres.executeUpdate();
+			//
+			pres = conn.prepareStatement("SELECT post_id FROM `mydb`.`post` ORDER BY post_id DESC LIMIT 1");
+			
+			rs = pres.executeQuery();
+
+			/** 紀錄真實執行的SQL指令，並印出 **/
+			exexcute_sql = pres.toString();
+			//System.out.println("posthelper get new post id: "+rs.getInt("post_id"));
+			System.out.println(exexcute_sql);
+
+			if (rs.next()) {
+		        post_id = rs.getInt("post_id");
+		        // 處理 ID 或執行其他操作
+		    }
+			
+		} catch (SQLException e) {
+			/** 印出JDBC SQL指令錯誤 **/
+			System.err.format("SQL State: %s\n%s\n%s", e.getErrorCode(), e.getSQLState(), e.getMessage());
+		} catch (Exception e) {
+			/** 若錯誤則印出錯誤訊息 */
+			e.printStackTrace();
+		} finally {
+			/** 關閉連線並釋放所有資料庫相關之資源 **/
+			DBMgr.close(pres, conn);
+		}
+
+		/** 紀錄程式結束執行時間 */
+		long end_time = System.nanoTime();
+		/** 紀錄程式執行時間 */
+		long duration = (end_time - start_time);
+
+		/** 將SQL指令、花費時間與影響行數，封裝成JSONObject回傳 */
+		JSONObject response = new JSONObject();
+		// response.put("sql", exexcute_sql);
+		// response.put("time", duration);
+		// response.put("row:", row);
+		System.out.println("posthelper get new post id: "+post_id);
+
+		return post_id;
+	}
+	
+	public JSONObject createfile(UploadedFile uf) {
+		/** 記錄實際執行之SQL指令 */
+		String exexcute_sql = "";
+		/** 紀錄程式開始執行時間 */
+		long start_time = System.nanoTime();
+		/** 紀錄SQL總行數 */
+		int row = 0;
+
+		try {
+			/** 取得資料庫之連線 */
+			conn = DBMgr.getConnection();
+			/** SQL指令 */
+			String sql = "INSERT INTO `mydb`.`file`(`file_path`, `post_id`, `member_id`)"
+					+ " VALUES(?, ?, ?)";
+
+			/** 取得所需之參數 */
+			String filePath = uf.getFile_Path();
+			int post_id = uf.getPost_ID();
+			int member_id = uf.getMember_ID();
+
+			/** 將參數回填至SQL指令當中 */
+			pres = conn.prepareStatement(sql);
+			// pres.setString(1, name);
+			pres.setString(1, filePath);
+			pres.setInt(2, post_id);
+			pres.setInt(3, member_id);
+
+			/** 執行新增之SQL指令並記錄影響之行數 */
+			row = pres.executeUpdate();
+
+			/** 紀錄真實執行的SQL指令，並印出 **/
+			exexcute_sql = pres.toString();
+			System.out.println(exexcute_sql);
+
+		} catch (SQLException e) {
+			/** 印出JDBC SQL指令錯誤 **/
+			System.err.format("SQL State: %s\n%s\n%s", e.getErrorCode(), e.getSQLState(), e.getMessage());
+		} catch (Exception e) {
+			/** 若錯誤則印出錯誤訊息 */
+			e.printStackTrace();
+		} finally {
+			/** 關閉連線並釋放所有資料庫相關之資源 **/
+			DBMgr.close(pres, conn);
+		}
+
+		/** 紀錄程式結束執行時間 */
+		long end_time = System.nanoTime();
+		/** 紀錄程式執行時間 */
+		long duration = (end_time - start_time);
+
+		/** 將SQL指令、花費時間與影響行數，封裝成JSONObject回傳 */
+		JSONObject response = new JSONObject();
+		// response.put("sql", exexcute_sql);
+		// response.put("time", duration);
+		// response.put("row:", row);
+
+		return response;
+	}
+
+
 	
 	public JSONObject getByID(String id) {
 		/** 新建一個 Member 物件之 m 變數，用於紀錄每一位查詢回之會員資料 */
