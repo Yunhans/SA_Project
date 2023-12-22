@@ -411,7 +411,7 @@ public class MemberHelper {
 			pres.setString(3, hash_pwd);
 			pres.setString(4, "寫下自介吧!");
 			pres.setInt(5, is_admin);
-			pres.setString(6, "no");
+			pres.setString(6, "img/initial.png");
 
 			/** 執行新增之SQL指令並記錄影響之行數 */
 			row = pres.executeUpdate();
