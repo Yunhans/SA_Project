@@ -28,7 +28,9 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.json.JSONObject;
 
-import app.Member;
+import app.MemberHelper;
+import app.Post;
+import app.PostHelper;
 import tools.JsonReader;
 
 /**
@@ -39,6 +41,8 @@ import tools.JsonReader;
 public class PostController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
+	/** mh，MemberHelper之物件與Member相關之資料庫方法（Sigleton） */
+	private PostHelper ph = PostHelper.getHelper();
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -52,7 +56,7 @@ public class PostController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		//System.out.println("membercontroller/doget");
+
 		/** 透過JsonReader類別將Request之JSON格式資料解析並取回 */
 		JsonReader jsr = new JsonReader(request);
 
@@ -67,7 +71,7 @@ public class PostController extends HttpServlet {
 		if (id == null) {
 			System.out.println("func: get all post");
 			/** 透過MemberHelper物件之getAll()方法取回所有會員之資料，回傳之資料為JSONObject物件 */
-			JSONObject query = mh.getAll();
+			JSONObject query = ph.getAllPost();
 
 			/** 新建一個JSONObject用於將回傳之資料進行封裝 */
 			JSONObject resp = new JSONObject();
@@ -78,9 +82,9 @@ public class PostController extends HttpServlet {
 			/** 透過JsonReader物件回傳到前端（以JSONObject方式） */
 			jsr.response(resp, response);
 		} else {
-			System.out.println("func: get by id");
+			System.out.println("func: postcontroller get by id");
 			/** 透過MemberHelper物件的getByID()方法自資料庫取回該名會員之資料，回傳之資料為JSONObject物件 */
-			JSONObject query = mh.getByID(id);
+			JSONObject query = ph.getByID(id);
 
 			/** 新建一個JSONObject用於將回傳之資料進行封裝 */
 			JSONObject resp = new JSONObject();

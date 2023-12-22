@@ -17,7 +17,7 @@ public class PostHelper {
 	}
 
 	// 靜態變數，儲存MemberHelper物件
-	private static PostHelper mh;
+	private static PostHelper ph;
 
 	// 儲存JDBC資料庫連線
 	private Connection conn = null;
@@ -32,10 +32,10 @@ public class PostHelper {
 
 	public static PostHelper getHelper() {
 		// Singleton檢查是否已經有MemberHelper物件，若無則new一個，若有則直接回傳 
-		if (mh == null)
-			mh = new PostHelper();
+		if (ph == null)
+			ph = new PostHelper();
 
-		return mh;
+		return ph;
 	}
 	
 	
