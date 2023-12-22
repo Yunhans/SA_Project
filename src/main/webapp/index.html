@@ -7,6 +7,8 @@
 
   <link href="statics/css/bootstrap.min.css" rel="stylesheet">
   <link href="statics/icons/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="statics/css/hugo.css" rel="stylesheet">
+
   <script src="statics/js/bootstrap.min.js"></script>
   <script src="statics/js/hugo.js"></script>
   <script src="statics/js/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
@@ -64,13 +66,14 @@
     </nav>
     
     <main>
-  
+    
+    <!-- all posts -->
     <div class="album py-5">
       <div class="container" id="post_container">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-3">
 
           <div class="col">
-            <div class="card">
+            <div class="card" id="post" onclick="showPostInfo(1)" data-bs-toggle="modal" data-bs-target="#file_info">
               <img class="bd-placeholder-img card-img-top object-fit-cover" width="100%" height="225" src="" alt="文件檔案"></img>
               <div class="card-body">
                 <h5 class="card-title">標題</h5>
@@ -83,6 +86,52 @@
             </div>
           </div>
           
+        </div>
+      </div>
+    </div>
+
+    <!-- Post Info Modal -->
+    <div class="modal fade" id="file_info" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down">
+        <div class="modal-content">
+          <div class="modal-header border-bottom-0">
+            <h1 class="modal-title fs-5">文件內容</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row mb-3">
+              <label for="post_name" class="col-sm-2 col-form-label">名稱</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control-plaintext rounded-3" id="post_name" value="file_name">
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label for="form-check" class="col-sm-2 col-form-label">類型</label>
+              <div class="col-sm-10">
+                <span class="badge rounded-pill text-bg-dark" id="post_type">類別</span>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label for="member_name" class="col-sm-2 col-form-label">作者</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control-plaintext rounded-3" id="member_name" value="auther">
+              </div>
+            </div>
+            <div class="row mb-3 col-12">
+              <label for="file_img" class="col-sm-2 col-form-label">檔案</label>
+              <div id="file_container" class="col-sm-10"></div>
+            </div>
+            <div class="row mb-3 col-12">
+              <label for="post_description" class="col-sm-2 col-form-label">說明</label>
+              <div class="col-sm-10">
+                <textarea class="form-control rounded-3" id="post_description" value="" style="height: 140px" readonly></textarea>
+              </div>
+            </div>
+            <div id="download_btn" class="flex text-center">
+              <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button> -->
+              <button class="btn btn-primary"><i class="bi bi-download"></i> 下載檔案</button>
+            </div>
+          </div>  
         </div>
       </div>
     </div>
@@ -143,7 +192,6 @@
 
         function updatePosts(data){
           $("#post_container > div").empty();
-          console.log("clear post");
           var post_html = '';
           var post_type = '';
           var initial_file_path = 'filepath/notebook.pdf';
@@ -151,23 +199,20 @@
             if(value["page"] == 1){
               console.log(value["file_path"], index);
               if(typeof value["file_path"] == 'undefined'){
-                post_html += '<div class="col"><div class="card"><img class="bd-placeholder-img card-img-top object-fit-cover" width="100%" height="225" src=" '+ initial_file_path +' " alt="文件檔案"></img>';
+                post_html += '<div class="col"><div class="card" id="post" onclick="showPostInfo(' + value["post_id"] + ')" data-bs-toggle="modal" data-bs-target="#file_info"><img class="bd-placeholder-img card-img-top object-fit-cover" width="100%" height="225" src=" '+ initial_file_path +' " alt="文件檔案"></img>';
               }else {
-                post_html += '<div class="col"><div class="card"><img class="bd-placeholder-img card-img-top object-fit-cover" width="100%" height="225" src=" '+ value["file_path"] +' " alt="文件檔案"></img>';
+                post_html += '<div class="col"><div class="card" id="post" onclick="showPostInfo(' + value["post_id"] + ')" data-bs-toggle="modal" data-bs-target="#file_info"><img class="bd-placeholder-img card-img-top object-fit-cover" width="100%" height="225" src=" '+ value["file_path"] +' " alt="文件檔案"></img>';
               }
               post_html += '<div class="card-body"><h5 class="card-title">' + value["post_title"] + '</h5>';
               post_html += '<p class="card-text text-truncate">' + value["post_description"] + '</p>';
               switch(value["post_type"]){
                 case 'course_note':
-                  console.log('筆記');
                   post_type = '筆記';
                   break;
                 case 'course_material':
-                  console.log('教材');
                   post_type = '教材';
                   break;
                 case 'course_feedback':
-                  console.log('課程評價');
                   post_type = '課程評價';
                   break;
                 default:
@@ -183,7 +228,115 @@
 
           $("#post_container > div").append(post_html);
         }
+
+        function showPostInfo(id){
+          var post_id = id;
+          console.log('post_id: '+post_id);
+          var data_object = {"post_id": post_id};
+          $.ajax({
+            type: "GET",
+            url: "api/post.do",
+            data: data_object,
+            crossDomain: true,
+            cache: false,
+            dataType: 'json',
+            timeout: 5000,
+            success: function (response) {
+              // alert("成功連線到伺服器！");
+              if(response.status == 200){
+                updatePostInfo(response.response.data);
+              }
+              console.log(response);
+            },
+            error: function () {
+              alert("無法連線到伺服器！");
+            }
+          });
+        }
+
+        function updatePostInfo(data) {
+          console.log(data[0]["post_title"]);
+          document.getElementById("post_name").value = data[0]["post_title"];
+          var post_type = '';
+          switch(data[0]["post_type"]){
+            case 'course_note':
+              post_type = '筆記';
+              break;
+            case 'course_material':
+              post_type = '教材';
+              break;
+            case 'course_feedback':
+              post_type = '課程評價';
+              break;
+            default:
+              console.log('無法分辨檔案類型');
+          }
+          $("#file_container").empty();
+          var file_html = '';
+          if(typeof data[0]["file_path"] == "undefined"){
+            console.log('無檔案');
+            file_html += '<div class="col-sm-10"><input type="text" class="form-control-plaintext rounded-3" value="無"></div>';
+            document.getElementById("download_btn").className = "d-none";
+          }else{
+            $("#file_container").empty();
+            $.each(data, function(index, value) {
+              file_html += '<img class="object-fit-cover img-thumbnail mb-2" width="100%" src="'+ value["file_path"] + '" alt="文件檔案"></img>'
+            })
+            document.getElementById("download_btn").className = "flex text-center";
+            $("#download_btn > button").off("click");
+            $("#download_btn > button").click(function() {
+              download(data, data[0]["post_id"]); // Pass any required parameters
+            });
+          }
+          $("#file_container").append(file_html);
+
+          // console.log(post_type);
+          $("#post_type").text(post_type);
+          document.getElementById("member_name").value = data[0]["member_name"];
+          document.getElementById("post_description").textContent = data[0]['post_description'];
+        }
+
+        function download(data, id){
+          console.log('file_id:'+id);
+          var fileUrls = [];
+          $.each(data, function(index, value) {
+            fileUrls.push(value["file_path"]);
+            console.log(value["file_path"]);
+          })
+          var new_file_name = data[0]["post_title"];
+          // Create a temporary link element
+          var link = document.createElement('a');
+
+          // Function to initiate download for a specific index
+          function downloadAtIndex(index) {
+            if (index < fileUrls.length) {
+              var fileUrl = fileUrls[index];
+              var fileName = fileUrl.split('/').pop();
+              var fileExtension = fileName.split('.').pop().toLowerCase();
+              
+              // Set the href attribute to the file URL
+              link.href = fileUrl;
+              link.download = new_file_name + '_' +index + '.' + fileExtension;
+              document.body.appendChild(link);
+              link.click();
+
+              // Delay removal of the link to allow the download to start
+              setTimeout(function () {
+                // Remove the link from the DOM
+                document.body.removeChild(link);
+
+                // Initiate the next download after a short delay
+                setTimeout(function () {
+                  downloadAtIndex(index + 1);
+                }, 100);
+              }, 200);
+            }
+          }
+          // Start the download sequence
+          downloadAtIndex(0);
+        }
     </script>
+
 
 </body>
 </html>
