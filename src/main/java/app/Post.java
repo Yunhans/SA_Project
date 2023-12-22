@@ -104,7 +104,7 @@ public Post(String post_title, String post_type, String post_description, int me
 		jso.put("post_type", getPost_Type());
 		jso.put("post_description", getPost_Description());
 		jso.put("member_id", getMember_ID());
-		jso.put("member_name", getMember_ID());
+		jso.put("member_name", getMember_Name());
 		jso.put("member_account", getMember_Account());
 
 		return jso;
