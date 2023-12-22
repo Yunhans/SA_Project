@@ -274,7 +274,7 @@ public class PostHelper {
 					+ "FROM Post p "
 					+ "Left JOIN file f ON p.post_id = f.post_id "
 					+ "LEFT JOIN Member m ON p.member_id = m.member_id "
-					+ "WHERE f.member_id = ?";
+					+ "WHERE m.member_id = ?";
 
 			/** 將參數回填至SQL指令當中 */
 			pres = conn.prepareStatement(sql);
