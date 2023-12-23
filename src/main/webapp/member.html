@@ -456,11 +456,11 @@
           }
           $("#delete_post_btn").off("click");
           $("#delete_post_btn").click(function() {
-            deletePost(data[0]["post_id"]); // Pass any required parameters
+            deletePost(data[0]["post_id"]);
           });
           $("#edit_post_btn").off("click");
           $("#edit_post_btn").click(function() {
-            editPost(data[0]["post_id"]); // Pass any required parameters
+            editPost(data[0]["post_id"]);
           });
 
           $("#file_container").append(file_html);
@@ -472,7 +472,33 @@
         }
 
         function deletePost(id){
-
+          var post_id = id;
+          var request = {"post_id": post_id};
+          var data_string = JSON.stringify(request);
+          var check = window.confirm("確認刪除檔案？");
+          if(check == true){
+            $.ajax({
+              type: "DELETE",
+              url: "api/post.do",
+              crossDomain: true,
+              data: data_string,
+              cache: false,
+              dataType: 'json',
+              timeout: 5000,
+              success: function (response) {
+                if(response.status == 200){
+                  alert("成功刪除檔案");
+                }
+                console.log(response);
+              },
+              error: function () {
+                alert("檔案刪除失敗");
+              }
+            });
+            setTimeout(() => {  location.reload(); }, 600);
+          }else{
+            console.log("You pressed Cancel!");
+          }
         }
       
         function editPost(id) {
