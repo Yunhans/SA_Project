@@ -454,6 +454,10 @@
               download(data, data[0]["post_id"]); // Pass any required parameters
             });
           }
+          $("#delete_post_btn").off("click");
+          $("#delete_post_btn").click(function() {
+            deletePost(data[0]["post_id"]); // Pass any required parameters
+          });
           $("#edit_post_btn").off("click");
           $("#edit_post_btn").click(function() {
             editPost(data[0]["post_id"]); // Pass any required parameters
@@ -465,6 +469,10 @@
           $("#post_type").text(post_type);
           // document.getElementById("member_name").value = data[0]["member_name"];
           document.getElementById("post_description").textContent = data[0]['post_description'];
+        }
+
+        function deletePost(id){
+
         }
       
         function editPost(id) {
@@ -478,14 +486,14 @@
           var request = {
             'post_id': post_id,
             'post_title': post_title,
-            'post_description': post_description,
+            'post_description': post_description
           };
 
           var data_string = JSON.stringify(request);
 
           $.ajax({
               type: "PUT",
-              url: "api/member.do",
+              url: "api/post.do",
               crossDomain: true,
               data: data_string,
               cache: false,
