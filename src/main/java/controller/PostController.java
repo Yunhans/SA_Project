@@ -28,6 +28,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.json.JSONObject;
 
+import app.Member;
 import app.MemberHelper;
 import app.Post;
 
@@ -246,6 +247,39 @@ public class PostController extends HttpServlet {
 		/** 透過JsonReader物件回傳到前端（以JSONObject方式） */
 		jsr.response(resp, response);
 	}
+	
+	//更新貼文
+	public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		/** 透過JsonReader類別將Request之JSON格式資料解析並取回 */
+		JsonReader jsr = new JsonReader(request);
+		JSONObject jso = jsr.getObject();
+
+		//System.out.println(jso.getString("post_id"));
+
+			/** 取出經解析到JSONObject之Request參數 */
+			String post_id = jso.getString("post_id");
+			String post_title = jso.getString("post_title");
+			String post_description = jso.getString("post_description");
+			
+			/** 透過Member物件的update()方法至資料庫更新該名會員資料，回傳之資料為JSONObject物件 */
+			JSONObject data = ph.updatePost(post_id, post_title,post_description);
+
+			/** 新建一個JSONObject用於將回傳之資料進行封裝 */
+			JSONObject resp = new JSONObject();
+			resp.put("status", "200");
+			resp.put("message", "成功更改貼文");
+			resp.put("response", data);
+
+			/** 透過JsonReader物件回傳到前端（以JSONObject方式） */
+			jsr.response(resp, response);
+			// 更新會員自介、帳號、暱稱
+		
+	}
+	
+	
+	
+	
 	
 
 	private static String generateRandomCode() {
