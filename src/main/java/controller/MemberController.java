@@ -1,11 +1,14 @@
 package controller;
 
 import java.io.*;
+import java.util.List;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
 import org.json.*;
 import app.Member;
 import app.MemberHelper;
+import app.PostHelper;
 import tools.JsonReader;
 
 // TODO: Auto-generated Javadoc
@@ -28,7 +31,7 @@ public class MemberController extends HttpServlet {
 
 	/** mh，MemberHelper之物件與Member相關之資料庫方法（Sigleton） */
 	private MemberHelper mh = MemberHelper.getHelper();
-
+	private PostHelper ph = PostHelper.getHelper();
 	/**
 	 * 處理Http Method請求POST方法（新增資料）
 	 *
@@ -135,9 +138,20 @@ public class MemberController extends HttpServlet {
 		int id = jso.getInt("member_id");
 		System.out.println("get id (from test_delete): " + id);
 
+		// get every post id owned by delete member
+		List<Integer> ids = ph.getAllDelPost(id);
+		System.out.println("memberctrl getalldetpostid: "+ids);
+				
+		//delete every post and file
+		for (int i : ids) {
+			ph.deletePostbyId(i);
+			ph.deleteFile(i);
+		}
+		
 		/** 透過MemberHelper物件的deleteByID()方法至資料庫刪除該名會員，回傳之資料為JSONObject物件 */
 		JSONObject query = mh.deleteByID(id);
-
+		
+		
 		/** 新建一個JSONObject用於將回傳之資料進行封裝 */
 		JSONObject resp = new JSONObject();
 		resp.put("message", "會員移除成功！");

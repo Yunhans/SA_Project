@@ -2,6 +2,9 @@ package app;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.*;
 
 import util.DBMgr;
@@ -384,6 +387,63 @@ public class PostHelper {
 		
 		return response;
 	}
+	
+	public List<Integer> getAllDelPost(int member_id){
+		List<Integer> ids = new ArrayList<>();
+		
+		/** 記錄實際執行之SQL指令 */
+		String exexcute_sql = "";
+		/** 紀錄SQL總行數 */
+		//int row = 0;
+		/** 儲存JDBC檢索資料庫後回傳之結果，以 pointer 方式移動到下一筆資料 */
+		ResultSet rs = null;
+
+		try {
+			/** 取得資料庫之連線 */
+			conn = DBMgr.getConnection();
+			/** SQL指令 */
+			String sql = "SELECT m.member_id, p.post_id "
+						+ "FROM member m "
+						+ "LEFT JOIN post p ON m.member_id = p.member_id "
+						+ "WHERE m.member_id = ?";
+
+			/** 將參數回填至SQL指令當中 */
+			pres = conn.prepareStatement(sql);
+			pres.setInt(1, member_id);
+			/** 執行查詢之SQL指令並記錄其回傳之資料 */
+			rs = pres.executeQuery();
+
+			/** 紀錄真實執行的SQL指令，並印出 **/
+			exexcute_sql = pres.toString();
+			System.out.println("posthelper getalldelpost sql: "+exexcute_sql);
+
+			/** 透過 while 迴圈移動pointer，取得每一筆回傳資料 */
+			/** 正確來說資料庫只會有一筆該會員編號之資料，因此其實可以不用使用 while 迴圈 */
+			while (rs.next()) {
+				/** 每執行一次迴圈表示有一筆資料 */
+				//row += 1;
+
+				/** 將 ResultSet 之資料取出 */
+				int post_id = rs.getInt("post_id");
+				ids.add(post_id);
+			}
+
+		} catch (SQLException e) {
+			/** 印出JDBC SQL指令錯誤 **/
+			System.err.format("SQL State: %s\n%s\n%s", e.getErrorCode(), e.getSQLState(), e.getMessage());
+		} catch (Exception e) {
+			/** 若錯誤則印出錯誤訊息 */
+			e.printStackTrace();
+		} finally {
+			/** 關閉連線並釋放所有資料庫相關之資源 **/
+			DBMgr.close(rs, pres, conn);
+		}
+		
+		System.out.println(ids);
+		return ids;
+	}
+	
+	
 	
  	public JSONObject getByID(String id) {
 		/** 新建一個 Member 物件之 m 變數，用於紀錄每一位查詢回之會員資料 */
