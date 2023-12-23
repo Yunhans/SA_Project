@@ -258,10 +258,13 @@ public class PostController extends HttpServlet {
 		//System.out.println(jso.getString("post_id"));
 
 			/** 取出經解析到JSONObject之Request參數 */
-			String post_id = jso.getString("post_id");
+			int post_id = jso.getInt("post_id");
 			String post_title = jso.getString("post_title");
 			String post_description = jso.getString("post_description");
 			
+			//System.out.println("postcrtl do put id:" + post_id);
+			//System.out.println("postcrtl do put id:" + post_title);
+			//System.out.println("postcrtl do put id:" + post_description);
 			/** 透過Member物件的update()方法至資料庫更新該名會員資料，回傳之資料為JSONObject物件 */
 			JSONObject data = ph.updatePost(post_id, post_title,post_description);
 

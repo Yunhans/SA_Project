@@ -515,7 +515,7 @@ public class PostHelper {
 	}
  	
  	
- 	public JSONObject updatePost(String post_id, String post_title, String post_description) {
+ 	public JSONObject updatePost(int post_id, String post_title, String post_description) {
 		/** 紀錄回傳之資料 */
 		JSONArray jsa = new JSONArray();
 		/** 記錄實際執行之SQL指令 */
@@ -531,14 +531,14 @@ public class PostHelper {
 			pres = conn.prepareStatement(sql);
 			pres.setString(1, post_title);
 			pres.setString(2, post_description);
-			pres.setString(3, post_id);
+			pres.setInt(3, post_id);
 			
 			/** 執行更新之SQL指令並記錄影響之行數 */
-			pres.executeQuery();
+			pres.executeUpdate();
 
 			/** 紀錄真實執行的SQL指令，並印出 **/
 			exexcute_sql = pres.toString();
-			System.out.println(exexcute_sql);
+			System.out.println("posthelper updatepost: " + exexcute_sql);
 
 		} catch (SQLException e) {
 			/** 印出JDBC SQL指令錯誤 **/
@@ -555,7 +555,7 @@ public class PostHelper {
 		JSONObject response = new JSONObject();
 		//response.put("sql", exexcute_sql);
 		response.put("data", jsa);
-		System.out.println("memberhelper update response: " + response);
+		System.out.println("posthelper update response: " + response);
 		return response;
 	}
 }
