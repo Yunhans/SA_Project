@@ -243,38 +243,41 @@
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body m-3">
-                      <div class="row mb-3">
-                        <label for="post_name" class="col-sm-2 col-form-label">名稱</label>
-                        <div class="col-sm-10">
-                          <input type="text" class="form-control-plaintext rounded-3" id="post_name" value="file_name" readonly>
+                      <!-- <form id="edit_post_info" enctype="multipart/form-data"> -->
+                        <div class="row mb-3">
+                          <label for="post_name" class="col-sm-2 col-form-label">名稱</label>
+                          <div class="col-sm-10">
+                            <input type="text" class="form-control rounded-3" id="post_name" value="file_name">
+                          </div>
                         </div>
-                      </div>
-                      <div class="row mb-3">
-                        <label for="post_type" class="col-sm-2 col-form-label">類型</label>
-                        <div class="col-sm-10">
-                          <span class="badge rounded-pill text-bg-dark" id="post_type">類別</span>
+                        <div class="row mb-3">
+                          <label for="post_type" class="col-sm-2 col-form-label">類型</label>
+                          <div class="col-sm-10">
+                            <span class="badge rounded-pill text-bg-dark" id="post_type">類別</span>
+                          </div>
                         </div>
-                      </div>
-                      <div class="row mb-3">
-                        <label for="member_name" class="col-sm-2 col-form-label">作者</label>
-                        <div class="col-sm-10">
-                          <input type="text" class="form-control-plaintext rounded-3" id="member_name" value="auther" readonly>
+                        <!-- <div class="row mb-3">
+                          <label for="member_name" class="col-sm-2 col-form-label">作者</label>
+                          <div class="col-sm-10">
+                            <input type="text" class="form-control-plaintext rounded-3" id="member_name" value="auther" readonly>
+                          </div>
+                        </div> -->
+                        <div class="row mb-3 col-12">
+                          <label for="file_img" class="col-sm-2 col-form-label">檔案</label>
+                          <div id="file_container" class="col-sm-10"></div>
                         </div>
-                      </div>
-                      <div class="row mb-3 col-12">
-                        <label for="file_img" class="col-sm-2 col-form-label">檔案</label>
-                        <div id="file_container" class="col-sm-10"></div>
-                      </div>
-                      <div class="row mb-3 col-12">
-                        <label for="post_description" class="col-sm-2 col-form-label">說明</label>
-                        <div class="col-sm-10">
-                          <textarea class="form-control rounded-3" id="post_description" value="" style="height: 140px" readonly></textarea>
+                        <div class="row mb-3 col-12">
+                          <label for="post_description" class="col-sm-2 col-form-label">說明</label>
+                          <div class="col-sm-10">
+                            <textarea class="form-control rounded-3" id="post_description" value="" style="height: 140px"></textarea>
+                          </div>
                         </div>
-                      </div>
-                      <div id="download_btn" class="flex text-center">
-                        <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button> -->
-                        <button type="submit" class="btn btn-primary"><i class="bi bi-download"></i> 下載檔案</button>
-                      </div>
+                        <div class="flex text-center">
+                          <button id="delete_post_btn" type="button" class="btn btn-danger">刪除檔案</button>
+                          <button id="download_post_btn" type="button" class="btn btn-success"><i class="bi bi-download"></i> 下載檔案</button>
+                          <button id="edit_post_btn" class="btn btn-primary"><i class="bi bi-pencil-square"></i> 確認修改</button>
+                        </div>
+                      <!-- </form> -->
                     </div>  
                   </div>
                 </div>
@@ -439,24 +442,66 @@
           if(typeof data[0]["file_path"] == "undefined"){
             console.log('無檔案');
             file_html += '<div class="col-sm-10"><input type="text" class="form-control-plaintext rounded-3" value="無" readonly></div>';
-            document.getElementById("download_btn").className = "d-none";
+            document.getElementById("download_post_btn").className = "d-none";
           }else{
             $("#file_container").empty();
             $.each(data, function(index, value) {
               file_html += '<img class="object-fit-cover img-thumbnail mb-2" width="100%" src="'+ value["file_path"] + '" alt="文件檔案"></img>'
             })
-            document.getElementById("download_btn").className = "flex text-center";
-            $("#download_btn > button").off("click");
-            $("#download_btn > button").click(function() {
+            document.getElementById("download_post_btn").className = "btn btn-success";
+            $("#download_post_btn").off("click");
+            $("#download_post_btn").click(function() {
               download(data, data[0]["post_id"]); // Pass any required parameters
             });
           }
+          $("#edit_post_btn").off("click");
+          $("#edit_post_btn").click(function() {
+            editPost(data[0]["post_id"]); // Pass any required parameters
+          });
+
           $("#file_container").append(file_html);
 
           // console.log(post_type);
           $("#post_type").text(post_type);
-          document.getElementById("member_name").value = data[0]["member_name"];
+          // document.getElementById("member_name").value = data[0]["member_name"];
           document.getElementById("post_description").textContent = data[0]['post_description'];
+        }
+      
+        function editPost(id) {
+          var post_id = id;
+          var post_title = document.getElementById("post_name").value;
+          var post_description = $("#post_description").val();
+          console.log("id:"+post_id);
+          console.log("title:"+post_title);
+          console.log("description:"+post_description);
+
+          var request = {
+            'post_id': post_id,
+            'post_title': post_title,
+            'post_description': post_description,
+          };
+
+          var data_string = JSON.stringify(request);
+
+          $.ajax({
+              type: "PUT",
+              url: "api/member.do",
+              crossDomain: true,
+              data: data_string,
+              cache: false,
+              dataType: 'json',
+              timeout: 5000,
+              success: function (response) {
+                if(response.status == 200){
+                  alert("成功更改檔案內容");
+                }
+                console.log(response);
+              },
+              error: function () {
+                alert("檔案內容更改失敗");
+              }
+          });
+          setTimeout(() => {  location.reload(); }, 600);
         }
 
         function download(data, id){
@@ -515,7 +560,7 @@
                 document.getElementById('loginBtn').style.display = 'block';
                 document.getElementById('logoutBtn').style.display = 'none';
                 alert('未登入會員，將跳轉登入畫面');
-                window.location.href = "/NCU_MIS_SA/login.html";
+                window.location.href = "/SA_Project/login.html";
             }
         }
 
