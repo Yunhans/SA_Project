@@ -127,9 +127,9 @@
                 <textarea class="form-control rounded-3" id="post_description" value="" style="height: 140px" readonly></textarea>
               </div>
             </div>
-            <div id="download_btn" class="flex text-center">
-              <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button> -->
-              <button class="btn btn-primary"><i class="bi bi-download"></i> 下載檔案</button>
+            <div class="flex text-center">
+              <button id="delete_post_btn" type="button" class="btn btn-danger">刪除檔案</button>
+              <button id="download_post_btn" type="button" class="btn btn-success"><i class="bi bi-download"></i> 下載檔案</button>
             </div>
           </div>  
         </div>
@@ -155,9 +155,12 @@
               document.getElementById('member_page').style.display = 'none';
               document.getElementById('alert_page').style.display = 'none';
               document.getElementById('admin_page').style.display = 'block';
+              document.getElementById('delete_post_btn').className = "btn btn-danger";
+
             }else{
               document.getElementById('member_page').style.display = 'block';
               document.getElementById('alert_page').style.display = 'block';
+              document.getElementById('delete_post_btn').className = "d-none";
             }
           } else {
             // 用戶未登入
@@ -276,24 +279,59 @@
           if(typeof data[0]["file_path"] == "undefined"){
             console.log('無檔案');
             file_html += '<div class="col-sm-10"><input type="text" class="form-control-plaintext rounded-3" value="無" readonly></div>';
-            document.getElementById("download_btn").className = "d-none";
+            document.getElementById("download_post_btn").className = "d-none";
           }else{
             $("#file_container").empty();
             $.each(data, function(index, value) {
               file_html += '<img class="object-fit-cover img-thumbnail mb-2" width="100%" src="'+ value["file_path"] + '" alt="文件檔案"></img>'
             })
-            document.getElementById("download_btn").className = "flex text-center";
-            $("#download_btn > button").off("click");
-            $("#download_btn > button").click(function() {
+            document.getElementById("download_post_btn").className = "btn btn-success";
+            $("#download_post_btn").off("click");
+            $("#download_post_btn").click(function() {
               download(data, data[0]["post_id"]); // Pass any required parameters
             });
           }
+          $("#delete_post_btn").off("click");
+          $("#delete_post_btn").click(function() {
+            deletePost(data[0]["post_id"]);
+          });
+
           $("#file_container").append(file_html);
 
           // console.log(post_type);
           $("#post_type").text(post_type);
           document.getElementById("member_name").value = data[0]["member_name"];
           document.getElementById("post_description").textContent = data[0]['post_description'];
+        }
+
+        function deletePost(id){
+          var post_id = id;
+          var request = {"post_id": post_id};
+          var data_string = JSON.stringify(request);
+          var check = window.confirm("確認刪除檔案？");
+          if(check == true){
+            $.ajax({
+              type: "DELETE",
+              url: "api/post.do",
+              crossDomain: true,
+              data: data_string,
+              cache: false,
+              dataType: 'json',
+              timeout: 5000,
+              success: function (response) {
+                if(response.status == 200){
+                  alert("成功刪除檔案");
+                }
+                console.log(response);
+              },
+              error: function () {
+                alert("檔案刪除失敗");
+              }
+            });
+            setTimeout(() => {  location.reload(); }, 600);
+          }else{
+            console.log("You pressed Cancel!");
+          }
         }
 
         function download(data, id){
