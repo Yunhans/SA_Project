@@ -127,7 +127,7 @@ public class PostController extends HttpServlet {
 		
 
 		//Collection<Part> parts = request.getParts();
-        String uploadDir = "eclipse-workspace/SA_Project/src/main/webapp/filepath/";
+        //String uploadDir = "eclipse-workspace/SA_Project/src/main/webapp/filepath/";
        
         
         //String cla = this.getClass().getClassLoader().getResource(".").getPath();
