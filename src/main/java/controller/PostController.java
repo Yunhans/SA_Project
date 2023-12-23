@@ -171,7 +171,7 @@ public class PostController extends HttpServlet {
 						// Construct the path where you want to save the file
                         String filePathname = randomCode+ "_" + fileName  ;
                         
-                      //file path in folder
+                       //file path in folder
                         String uploadDirectory = "eclipse-workspace/SA_Project/src/main/webapp/filepath/" + filePathname;
                         // file path in sql
                         String sql_store = "filepath/" + filePathname;
@@ -222,7 +222,31 @@ public class PostController extends HttpServlet {
         	
 	}
 	
+	public void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		/** 透過JsonReader類別將Request之JSON格式資料解析並取回 */
+		JsonReader jsr = new JsonReader(request);
+		JSONObject jso = jsr.getObject();
 
+		/** 取出經解析到JSONObject之Request參數 */
+		int post_id = jso.getInt("post_id");
+		System.out.println("get id (from test_delete): " + post_id);
+
+		/** 透過MemberHelper物件的deleteByID()方法至資料庫刪除該名會員，回傳之資料為JSONObject物件 */
+		JSONObject query = ph.deletePostbyId(post_id);
+		ph.deleteFile(post_id);
+
+		/** 新建一個JSONObject用於將回傳之資料進行封裝 */
+		JSONObject resp = new JSONObject();
+		resp.put("message", "貼文移除成功！");
+		resp.put("status", "200");
+
+		resp.put("response", query);
+
+		/** 透過JsonReader物件回傳到前端（以JSONObject方式） */
+		jsr.response(resp, response);
+	}
+	
 
 	private static String generateRandomCode() {
         // 定義亂數產生的範圍（這裡是0到9999）
@@ -240,15 +264,6 @@ public class PostController extends HttpServlet {
 
         return randomCode;
     }
-	
-//	private String getFileExtension(String fileName) {
-//	    return fileName.substring(fileName.lastIndexOf('.') + 1);
-//	}
-	
-//    private boolean isFilePart(Part part) {
-//        // 檢查 Content-Disposition header 是否包含 "filename"
-//        return part.getHeader("content-disposition").contains("filename");
-//    }
 
     private String getFileName(Part part) {
         for (String content : part.getHeader("content-disposition").split(";")) {
@@ -259,6 +274,15 @@ public class PostController extends HttpServlet {
         return null;
     }
 
+//	private String getFileExtension(String fileName) {
+//    return fileName.substring(fileName.lastIndexOf('.') + 1);
+//}
+
+//private boolean isFilePart(Part part) {
+//    // 檢查 Content-Disposition header 是否包含 "filename"
+//    return part.getHeader("content-disposition").contains("filename");
+//}
+    
 //    private void saveFile(InputStream fileContent, String uploadFolder, String fileName) throws IOException {
 //        Path uploadPath = Paths.get(uploadFolder);
 //        Files.createDirectories(uploadPath);
