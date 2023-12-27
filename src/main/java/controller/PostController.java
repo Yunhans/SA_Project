@@ -60,10 +60,10 @@ public class PostController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-
+		
 		/** 透過JsonReader類別將Request之JSON格式資料解析並取回 */
 		JsonReader jsr = new JsonReader(request);
-
+		
 		// String id = jsr.getParameter("id");
 		String post_id = request.getParameter("post_id");
 		String member_id = request.getParameter("member_id");
@@ -158,10 +158,10 @@ public class PostController extends HttpServlet {
         
         System.out.println("Shit");
         try {
-    		
+        	request.setCharacterEncoding("UTF-8");
             Collection<Part> parts = request.getParts();
             System.out.println(parts);
-
+            
             
             //貼文存進資料庫
             
@@ -269,7 +269,7 @@ public class PostController extends HttpServlet {
 	
 	//更新貼文
 	public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+		request.setCharacterEncoding("UTF-8");
 		/** 透過JsonReader類別將Request之JSON格式資料解析並取回 */
 		JsonReader jsr = new JsonReader(request);
 		JSONObject jso = jsr.getObject();
