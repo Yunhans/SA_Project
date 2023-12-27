@@ -67,13 +67,16 @@ public class PostController extends HttpServlet {
 		// String id = jsr.getParameter("id");
 		String post_id = request.getParameter("post_id");
 		String member_id = request.getParameter("member_id");
-		System.out.println("jsr.getparameter id: " + member_id);
+		String search_wd = request.getParameter("search");
+		System.out.println("postctrl doget post id: " + post_id);
+		System.out.println("postctrl doget member id: " + member_id);
+		System.out.println("postctrl doget search word: " + search_wd);
 
 		/** 若直接透過前端AJAX之data以key=value之字串方式進行傳遞參數，可以直接由此方法取回資料 */
 		// int id = -1;
 		// id = jso.getInt("member_id");
 		/** 判斷該字串是否存在，若存在代表要取回個別會員之資料，否則代表要取回全部資料庫內會員之資料 */
-		if (member_id == null && post_id == null) {
+		if (member_id == null && post_id == null && search_wd == null) {
 			System.out.println("func: postcontroller get all post");
 			/** 透過MemberHelper物件之getAll()方法取回所有會員之資料，回傳之資料為JSONObject物件 */
 			JSONObject query = ph.getAllPost();
@@ -86,7 +89,9 @@ public class PostController extends HttpServlet {
 
 			/** 透過JsonReader物件回傳到前端（以JSONObject方式） */
 			jsr.response(resp, response);
-		}else if(post_id != null) {
+		}
+		// get single post
+		else if(post_id != null) {
 			
 			//System.out.println("func: postcontroller get by id");
 			
@@ -101,7 +106,21 @@ public class PostController extends HttpServlet {
 			System.out.println("pctrller do get response:" + resp);
 			/** 透過JsonReader物件回傳到前端（以JSONObject方式） */
 			jsr.response(resp, response);
-		}else {
+		}
+		//get search outcome
+		else if(search_wd != null) {
+			JSONObject query = ph.getSearch(search_wd);
+			
+			JSONObject resp = new JSONObject();
+			resp.put("status", "200");
+			resp.put("message", "成功取得搜尋結果");
+			resp.put("response", query);
+			System.out.println("pctrller do get response:" + resp);
+			/** 透過JsonReader物件回傳到前端（以JSONObject方式） */
+			jsr.response(resp, response);
+		}
+		//get member post
+		else {
 			System.out.println("func: postcontroller get by id");
 			/** 透過MemberHelper物件的getByID()方法自資料庫取回該名會員之資料，回傳之資料為JSONObject物件 */
 			JSONObject query = ph.getByID(member_id);
