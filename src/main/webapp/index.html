@@ -45,10 +45,10 @@
                     </li>
                 </ul>
                 <!-- search bar -->
-                <form role="search">
+                <form role="search" onsubmit="return false;">
                     <div class="input-group">
                       <span class="input-group-text bg-white text-secondary border-end-0 ms-1 pe-2" id="basic-addon1"><i class="bi bi-search"></i></span>
-                      <input type="search" class="form-control border-start-0 me-1 ps-2" placeholder="搜尋" aria-label="Search" aria-describedby="basic-addon1">
+                      <input type="search" class="form-control border-start-0 me-1 ps-2" placeholder="搜尋" aria-label="Search" aria-describedby="basic-addon1" id="searchInput" onkeydown="search(event)">
                     </div>
                 </form>
                 <div class="text-center">
@@ -128,7 +128,7 @@
               </div>
             </div>
             <div class="flex text-center">
-              <button id="delete_post_btn" type="button" class="btn btn-danger">刪除檔案</button>
+              <button id="delete_post_btn" type="button" class="d-none">刪除檔案</button>
               <button id="download_post_btn" type="button" class="btn btn-success"><i class="bi bi-download"></i> 下載檔案</button>
             </div>
           </div>  
@@ -156,7 +156,6 @@
               document.getElementById('alert_page').style.display = 'none';
               document.getElementById('admin_page').style.display = 'block';
               document.getElementById('delete_post_btn').className = "btn btn-danger";
-
             }else{
               document.getElementById('member_page').style.display = 'block';
               document.getElementById('alert_page').style.display = 'block';
@@ -171,6 +170,40 @@
           }
         }
 
+        function search(event){
+          if(event.key === "Enter"){
+            var searchTerm = document.getElementById('searchInput').value;
+            if (searchTerm.trim() !== '') {
+              console.log('search: ' + searchTerm);
+
+              var data_object = {"search": searchTerm};
+              var data_string = JSON.stringify(data_object);
+
+              $.ajax({
+                type: "POST",
+                url: "api/post.do",
+                data: data_string,
+                crossDomain: true,
+                cache: false,
+                dataType: 'json',
+                timeout: 5000,
+                success: function (response) {
+                  if(response.status == 200){
+                    updatePosts(response.response.data);
+                  }
+                  console.log(response);
+                },
+                error: function () {
+                  alert("無法連線到伺服器！");
+                }
+              });
+
+            }else{
+              console.log("沒有輸入");
+            }
+          }
+        }
+
         function getAllPost() {
           $.ajax({
             type: "GET",
@@ -180,8 +213,6 @@
             dataType: 'json',
             timeout: 5000,
             success: function (response) {
-              // alert("成功連線到伺服器！");
-              // updatePosts(response.response.data);
               if(response.status == 200){
                 updatePosts(response.response.data);
               }
@@ -211,17 +242,20 @@
               switch(value["post_type"]){
                 case 'course_note':
                   post_type = '筆記';
+                  post_html += '<div class="d-flex justify-content-between align-items-center"><span class="badge rounded-pill text-bg-primary">' + post_type + '</span>';
                   break;
                 case 'course_material':
                   post_type = '教材';
+                  post_html += '<div class="d-flex justify-content-between align-items-center"><span class="badge rounded-pill text-bg-warning">' + post_type + '</span>';
                   break;
                 case 'course_feedback':
                   post_type = '課程評價';
+                  post_html += '<div class="d-flex justify-content-between align-items-center"><span class="badge rounded-pill text-bg-dark">' + post_type + '</span>';
                   break;
                 default:
                   console.log('無法分辨檔案類型');
               }
-              post_html += '<div class="d-flex justify-content-between align-items-center"><span class="badge rounded-pill text-bg-dark">' + post_type + '</span>';
+              // post_html += '<div class="d-flex justify-content-between align-items-center"><span class="badge rounded-pill text-bg-dark">' + post_type + '</span>';
               post_html += '<small class="text-body-secondary">by ' + value["member_name"] + '</small></div></div></div></div>';
             }else{
               console.log('page not 1');
