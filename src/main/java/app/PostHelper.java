@@ -642,12 +642,14 @@ public class PostHelper {
 					+ "Left JOIN file f ON p.post_id = f.post_id "
 					+ "LEFT JOIN Member m ON p.member_id = m.member_id " 
 					+ "LEFT JOIN keyword k ON P.post_id = k.post_id "
-					+ "WHERE p.post_title LIKE ? OR k.word LIKE ?";
+					+ "WHERE p.post_title LIKE ? OR k.word LIKE ? OR m.member_name LIKE ? OR p.post_type LIKE ?";
 
 			/** 將參數回填至SQL指令當中 */
 			pres = conn.prepareStatement(sql);
 			pres.setString(1, "%"+search_wd+"%");
 			pres.setString(2, "%"+search_wd+"%");
+			pres.setString(3, "%"+search_wd+"%");
+			pres.setString(4, "%"+search_wd+"%");
 			/** 執行查詢之SQL指令並記錄其回傳之資料 */
 			rs = pres.executeQuery();
 
