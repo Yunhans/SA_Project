@@ -177,17 +177,17 @@
               console.log('search: ' + searchTerm);
 
               var data_object = {"search": searchTerm};
-              var data_string = JSON.stringify(data_object);
 
               $.ajax({
-                type: "POST",
+                type: "GET",
                 url: "api/post.do",
-                data: data_string,
+                data: data_object,
                 crossDomain: true,
                 cache: false,
                 dataType: 'json',
                 timeout: 5000,
                 success: function (response) {
+                  // alert("成功連線到伺服器！");
                   if(response.status == 200){
                     updatePosts(response.response.data);
                   }
@@ -231,7 +231,7 @@
           var initial_file_path = 'filepath/notebook.pdf';
           $.each(data, function(index, value) {
             if(value["page"] == 1){
-              console.log(value["file_path"], index);
+              // console.log(value["file_path"], index);
               if(typeof value["file_path"] == 'undefined'){
                 post_html += '<div class="col"><div class="card" id="post" onclick="showPostInfo(' + value["post_id"] + ')" data-bs-toggle="modal" data-bs-target="#file_info"><img class="bd-placeholder-img card-img-top object-fit-cover" width="100%" height="225" src=" '+ initial_file_path +' " alt="文件檔案"></img>';
               }else {
@@ -258,7 +258,7 @@
               // post_html += '<div class="d-flex justify-content-between align-items-center"><span class="badge rounded-pill text-bg-dark">' + post_type + '</span>';
               post_html += '<small class="text-body-secondary">by ' + value["member_name"] + '</small></div></div></div></div>';
             }else{
-              console.log('page not 1');
+              // console.log('page not 1');
             }
                 
           })
