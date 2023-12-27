@@ -129,7 +129,7 @@
             </div>
             <div class="flex text-center">
               <button id="delete_post_btn" type="button" class="d-none">刪除檔案</button>
-              <button id="download_post_btn" type="button" class="btn btn-success"><i class="bi bi-download"></i> 下載檔案</button>
+              <button id="download_post_btn" type="button" class="d-none"><i class="bi bi-download"></i> 下載檔案</button>
             </div>
           </div>  
         </div>
@@ -151,6 +151,7 @@
             // 用戶已登入
             document.getElementById('loginBtn').style.display = 'none';
             document.getElementById('logoutBtn').style.display = 'block';
+            document.getElementById('download_post_btn').className = "btn btn-success";
             if(adminLoggedIn === 'true'){
               document.getElementById('member_page').style.display = 'none';
               document.getElementById('alert_page').style.display = 'none';
@@ -167,6 +168,7 @@
             document.getElementById('logoutBtn').style.display = 'none';
             document.getElementById('member_page').style.display = 'none';
             document.getElementById('alert_page').style.display = 'none';
+            document.getElementById('download_post_btn').className = "d-none";
           }
         }
 
@@ -319,7 +321,7 @@
             $.each(data, function(index, value) {
               file_html += '<img class="object-fit-cover img-thumbnail mb-2" width="100%" src="'+ value["file_path"] + '" alt="文件檔案"></img>'
             })
-            document.getElementById("download_post_btn").className = "btn btn-success";
+            // document.getElementById("download_post_btn").className = "btn btn-success";
             $("#download_post_btn").off("click");
             $("#download_post_btn").click(function() {
               download(data, data[0]["post_id"]); // Pass any required parameters
