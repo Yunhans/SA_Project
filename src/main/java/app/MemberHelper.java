@@ -131,7 +131,7 @@ public class MemberHelper {
 		try {
 			/** 取得資料庫之連線 */
 			conn = DBMgr.getConnection();
-			/** SQL指令 */
+			/** SQL指令: 所有會員資料 */
 			String sql = "SELECT * FROM `mydb`.`member`";
 
 			/** 將參數回填至SQL指令當中，若無則不用只需要執行 prepareStatement */
@@ -258,11 +258,6 @@ public class MemberHelper {
 			DBMgr.close(rs, pres, conn);
 		}
 
-		/** 紀錄程式結束執行時間 */
-		long end_time = System.nanoTime();
-		/** 紀錄程式執行時間 */
-		long duration = (end_time - start_time);
-
 		/** 將SQL指令、花費時間、影響行數與所有會員資料之JSONArray，封裝成JSONObject回傳 */
 		JSONObject response = new JSONObject();
 		// response.put("sql", exexcute_sql);
@@ -383,8 +378,7 @@ public class MemberHelper {
 	public JSONObject create(Member m) {
 		/** 記錄實際執行之SQL指令 */
 		String exexcute_sql = "";
-		/** 紀錄程式開始執行時間 */
-		long start_time = System.nanoTime();
+
 		/** 紀錄SQL總行數 */
 		int row = 0;
 
@@ -431,16 +425,9 @@ public class MemberHelper {
 			DBMgr.close(pres, conn);
 		}
 
-		/** 紀錄程式結束執行時間 */
-		long end_time = System.nanoTime();
-		/** 紀錄程式執行時間 */
-		long duration = (end_time - start_time);
 
 		/** 將SQL指令、花費時間與影響行數，封裝成JSONObject回傳 */
 		JSONObject response = new JSONObject();
-		// response.put("sql", exexcute_sql);
-		// response.put("time", duration);
-		// response.put("row:", row);
 
 		return response;
 	}
@@ -456,8 +443,7 @@ public class MemberHelper {
 		JSONArray jsa = new JSONArray();
 		/** 記錄實際執行之SQL指令 */
 		String exexcute_sql = "";
-		/** 紀錄程式開始執行時間 */
-		long start_time = System.nanoTime();
+
 		/** 紀錄SQL總行數 */
 		int row = 0;
 
@@ -496,16 +482,10 @@ public class MemberHelper {
 			DBMgr.close(pres, conn);
 		}
 
-		/** 紀錄程式結束執行時間 */
-		long end_time = System.nanoTime();
-		/** 紀錄程式執行時間 */
-		long duration = (end_time - start_time);
-
 		/** 將SQL指令、花費時間與影響行數，封裝成JSONObject回傳 */
 		JSONObject response = new JSONObject();
-		response.put("sql", exexcute_sql);
-		response.put("row", row);
-		response.put("time", duration);
+		//response.put("sql", exexcute_sql);
+		//response.put("row", row);
 		response.put("data", jsa);
 		System.out.println("memberhelper update response: " + response);
 		return response;
@@ -516,8 +496,7 @@ public class MemberHelper {
 		JSONArray jsa = new JSONArray();
 		/** 記錄實際執行之SQL指令 */
 		String exexcute_sql = "";
-		/** 紀錄程式開始執行時間 */
-		long start_time = System.nanoTime();
+
 		/** 紀錄SQL總行數 */
 		int row = 0;
 
@@ -552,15 +531,11 @@ public class MemberHelper {
 			DBMgr.close(pres, conn);
 		}
 
-		/** 紀錄程式結束執行時間 */
-		long end_time = System.nanoTime();
-		/** 紀錄程式執行時間 */
-		long duration = (end_time - start_time);
 
 		/** 將SQL指令、花費時間與影響行數，封裝成JSONObject回傳 */
 		JSONObject response = new JSONObject();
-		response.put("sql", exexcute_sql);
-		response.put("row", row);
+		//response.put("sql", exexcute_sql);
+		//response.put("row", row);
 		response.put("data", jsa);
 
 		return response;
@@ -571,8 +546,7 @@ public class MemberHelper {
 		JSONArray jsa = new JSONArray();
 		/** 記錄實際執行之SQL指令 */
 		String exexcute_sql = "";
-		/** 紀錄程式開始執行時間 */
-		long start_time = System.nanoTime();
+
 		/** 紀錄SQL總行數 */
 		int row = 0;
 
@@ -611,15 +585,11 @@ public class MemberHelper {
 			DBMgr.close(pres, conn);
 		}
 
-		/** 紀錄程式結束執行時間 */
-		long end_time = System.nanoTime();
-		/** 紀錄程式執行時間 */
-		long duration = (end_time - start_time);
 
 		/** 將SQL指令、花費時間與影響行數，封裝成JSONObject回傳 */
 		JSONObject response = new JSONObject();
-		response.put("sql", exexcute_sql);
-		response.put("row", row);
+		//response.put("sql", exexcute_sql);
+		//response.put("row", row);
 		response.put("data", jsa);
 
 		return response;
@@ -630,8 +600,6 @@ public class MemberHelper {
 		JSONArray jsa = new JSONArray();
 		/** 記錄實際執行之SQL指令 */
 		String exexcute_sql = "";
-		/** 紀錄程式開始執行時間 */
-		long start_time = System.nanoTime();
 		/** 紀錄SQL總行數 */
 		int row = 0;
 
@@ -669,15 +637,11 @@ public class MemberHelper {
 			DBMgr.close(pres, conn);
 		}
 
-		/** 紀錄程式結束執行時間 */
-		long end_time = System.nanoTime();
-		/** 紀錄程式執行時間 */
-		long duration = (end_time - start_time);
 
 		/** 將SQL指令、花費時間與影響行數，封裝成JSONObject回傳 */
 		JSONObject response = new JSONObject();
-		response.put("sql", exexcute_sql);
-		response.put("row", row);
+		//response.put("sql", exexcute_sql);
+		//response.put("row", row);
 		response.put("data", jsa);
 
 		return response;
@@ -690,8 +654,6 @@ public class MemberHelper {
 		JSONArray jsa = new JSONArray();
 		/** 記錄實際執行之SQL指令 */
 		String exexcute_sql = "";
-		/** 紀錄程式開始執行時間 */
-		long start_time = System.nanoTime();
 		/** 紀錄SQL總行數 */
 		int row = 0;
 		/** 儲存JDBC檢索資料庫後回傳之結果，以 pointer 方式移動到下一筆資料 */
@@ -746,10 +708,6 @@ public class MemberHelper {
 			DBMgr.close(rs, pres, conn);
 		}
 
-		/** 紀錄程式結束執行時間 */
-		long end_time = System.nanoTime();
-		/** 紀錄程式執行時間 */
-		long duration = (end_time - start_time);
 
 		/** 將SQL指令、花費時間、影響行數與所有會員資料之JSONArray，封裝成JSONObject回傳 */
 		JSONObject response = new JSONObject();

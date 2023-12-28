@@ -42,12 +42,9 @@ public class Member {
 
 	/**
 	 * 實例化（Instantiates）一個新的（new）Member物件<br>
-	 * 採用多載（overload）方法進行，此建構子用於建立會員資料時，產生一名新的會員
-	 *
-	 * @param member_account 會員電子信箱
-	 * @param hash_pwd       會員密碼
-	 * @param member_name    會員姓名
-	 * @param is_admin       會員身分
+	 * 採用多載（overload）方法進行
+	 * 
+	 * 所有會員資料
 	 */
 	public Member(String member_account, String hash_pwd, String member_name, int is_admin, String member_bio,
 			String member_img_path) {
@@ -64,11 +61,7 @@ public class Member {
 	 * 實例化（Instantiates）一個新的（new）Member物件<br>
 	 * 採用多載（overload）方法進行，此建構子用於更新會員資料時，產生一名會員同時需要去資料庫檢索原有更新時間分鐘數與會員組別
 	 * 
-	 * @param id             會員編號
-	 * @param member_account 會員電子信箱
-	 * @param hash_pwd       會員密碼
-	 * @param member_name    會員姓名
-	 * @param member_bio     會員自我介紹
+	 *
 	 */
 	public Member(int id, String member_account, String hash_pwd, String member_name, String member_bio) {
 		this.member_id = id;
@@ -138,7 +131,7 @@ public class Member {
 	}
 
 	/**
-	 * 取得更新之會員自介
+	 * 取得會員自介
 	 *
 	 * @return the member_bio 回傳會員自介
 	 */
@@ -147,7 +140,7 @@ public class Member {
 	}
 
 	/**
-	 * 取得會員資料之會員組別
+	 * 取得會員是否為管理員
 	 *
 	 * @return the status 回傳會員組別
 	 */
@@ -185,7 +178,7 @@ public class Member {
 	}
 
 	/**
-	 * 更改該名會員身分
+	 * 更改會員管理員權限
 	 *
 	 * @return the JSON object 回傳SQL更新之結果與相關封裝之資料
 	 */
